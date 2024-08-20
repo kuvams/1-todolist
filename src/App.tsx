@@ -22,17 +22,12 @@ function App() {
 //     const date = new Date().toLocaleString();
 
     function taskRemover(id: number) {
-        console.log(`remove ${id}`)
         setTasks1(tasks1.filter(t => t.id !== id))
-    }
-
-    const taskFilter = (filter: "all" | "active" | "completed") => {
-
     }
 
     return (
         <div className="App">
-            <TodoList title={"What to learn"} tasks={tasks1} taskRemover={taskRemover} taskFilter={taskFilter}/>
+            <TodoList title={"What to learn"} tasks={tasks1} taskRemover={taskRemover}/>
             {/*<TodoList title={"What to learn"} tasks={tasks2} date={date}/>*/}
         </div>
     );
