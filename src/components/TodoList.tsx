@@ -1,45 +1,40 @@
-import React from "react";
-import { Button } from "./Button";
+import {Button} from "./Button";
 
-
-export type TaskType = {
-    id: number
-    title: string
-    isDone: boolean
-}
 type TodoListPropsType = {
     title: string
     tasks: Array<TaskType>
     date?: string
+    taskRemover: (id: number) => void
+    taskFilter: (filter: "all" | "active" | "completed" ) => void
+}
+type TaskType = {
+    id: number
+    title: string
+    isDone: boolean
 }
 
-export const TodoList = ({title, tasks, date}: TodoListPropsType) => {
+export const TodoList = ({title, tasks, date = undefined, taskRemover}: TodoListPropsType) => {
+
+
     return (
         <div>
             <h3>{title}</h3>
-            <div>
-                <input/>
-                <Button title={'+'}/>
-            </div>
-            {tasks.length === 0 ? (
-                <p>Тасок нет</p>) : (
-                <ul>
-                    {tasks.map(tasks => {
-                        return (
-                            <li key={tasks.id}>
-                                <input type="checkbox" checked={tasks.isDone}/>
-                                <span>{tasks.title}</span>
-                            </li>
-                        )
-                    })}
-                </ul>
-            )}
-            <div>
-                <Button title={'All'}/>
-                <Button title={'Active'}/>
-                <Button title={'Completed'}/>
-            </div>
-            <div>{date}</div>
+            <input></input><Button title={"+"}/>
+            <ul>
+                {tasks.map(t => {
+                    return (
+                        <li key={t.id}>
+                            <input type="checkbox" checked={t.isDone}/>
+                            {t.title}
+                            <Button title={"x"} id={t.id} onCLickHandler={taskRemover}/>
+                        </li>
+                    )
+                })}
+            </ul>
+            <Button title={"All"}/>
+            <Button title={"Active"}/>
+            <Button title={"Completed"}/>
+            {date && <div>{date}</div>}
         </div>
     )
 }
