@@ -1,36 +1,47 @@
-import React, {useState} from 'react';
-import './App.css';
+import "./App.css"
+import React, {useState} from "react";
+import {v1} from "uuid";
 import {TodoList} from "./components/TodoList";
 
-function App() {
-//BLL
+export type TaskType = {
+    id: string
+    title: string
+    isDone: boolean
+}
 
-    const [tasks1, setTasks1] = useState([
-        {id: 1, title: "HTML&CSS", isDone: true},
-        {id: 2, title: "JS", isDone: true},
-        {id: 3, title: "ReactJS", isDone: false},
-        {id: 4, title: "Redux", isDone: false},
-        {id: 5, title: "TypeScript", isDone: false},
-        {id: 6, title: "RTK Query", isDone: false},
+export const App = () => {
+    const [tasks, setTasks] = useState<Array<TaskType>>([
+        { id: v1(), title: "HTML&CSS", isDone: true },
+        { id: v1(), title: "JS", isDone: true },
+        { id: v1(), title: "React", isDone: false },
     ])
-
-    // const tasks2 = [
-    //     {id: 1, title: "Hello World!", isDone: true},
-    // ]
-
-//UI
-//     const date = new Date().toLocaleString();
-
-    function taskRemover(id: number) {
-        setTasks1(tasks1.filter(t => t.id !== id))
+    const taskAdder = (title: string) => {
+        const newTask : TaskType = { id: v1(), title: title, isDone: false };
+        setTasks([newTask, ...tasks])
+    }
+    const taskRemover = (id: string) => {
+        const newTasks = tasks.filter((task: TaskType) => task.id !== id)
+        setTasks(newTasks)
+    }
+    const taskChangeStatus = (id: string) => {
+        const newTasks = tasks.map((task) => {
+            if (task.id === id) {
+                task.isDone = !task.isDone
+            }
+            return task
+        })
+        setTasks(newTasks)
     }
 
     return (
         <div className="App">
-            <TodoList title={"What to learn"} tasks={tasks1} taskRemover={taskRemover}/>
-            {/*<TodoList title={"What to learn"} tasks={tasks2} date={date}/>*/}
+            <TodoList
+                tasks={tasks}
+                title={"What to learn"}
+                taskAdder={taskAdder}
+                taskRemover={taskRemover}
+                taskChangeStatus={taskChangeStatus}
+            />
         </div>
     );
 }
-
-export default App;

@@ -1,60 +1,74 @@
+import {useState, KeyboardEvent} from "react";
 import {Button} from "./Button";
-import {useState} from "react";
+import {TaskType} from "../App";
 
-type TodoListPropsType = {
+export type TodoListPropsType = {
     title: string
     tasks: Array<TaskType>
-    date?: string
-    taskRemover: (id: number) => void
+    taskAdder: (title: string) => void
+    taskRemover: (id: string) => void
+    taskChangeStatus: (id: string) => void
 }
-type TaskType = {
-    id: number
-    title: string
-    isDone: boolean
-}
-
 type FilterType = "all" | "active" | "completed"
 
-export const TodoList = ({title, tasks, date = undefined, taskRemover}: TodoListPropsType) => {
-    const [filter, setFilter] = useState<FilterType>("all")
-    const taskFilter = (filter: FilterType) => {
-        setFilter(filter)
+
+export const TodoList = (props: TodoListPropsType) => {
+    const {title, tasks, taskAdder, taskRemover, taskChangeStatus} = props
+    const [newTaskTitleInput, setNewTaskTitleInput] = useState<string>("")
+
+    const addButtonIsDisabled = newTaskTitleInput.length === 0
+
+    const onCLickNewTaskInputHandler = () => {
+        taskAdder(newTaskTitleInput)
+        setNewTaskTitleInput("")
     }
+    const onKeyUpNewTaskInputHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && !addButtonIsDisabled) {
+            onCLickNewTaskInputHandler()
+        }
+    }
+
+    const [filter, setFilter] = useState<FilterType>("all")
     let filteredTasks = tasks
     if (filter === "active") {
-        filteredTasks = tasks.filter(t => !t.isDone)
+        filteredTasks = tasks.filter(task => !task.isDone)
     }
     if (filter === "completed") {
-        filteredTasks = tasks.filter(t => t.isDone)
+        filteredTasks = tasks.filter(task => task.isDone)
     }
+
 
     return (
         <div>
             <h3>{title}</h3>
-            <input></input>
-            <Button title={"+"} onCLickHandler={() => {}}/>
-            {filteredTasks.length === 0 && <div>пусто</div>}
-            <ul>
-                {filteredTasks.map(t => {
-                    return (
-                        <li key={t.id}>
-                            <input type="checkbox" checked={t.isDone}/>
-                            {t.title}
-                            <Button title={"x"} onCLickHandler={() => taskRemover(t.id)}/>
-                        </li>
-                    )
-                })}
+            <input
+                value={newTaskTitleInput}
+                onChange={(e) => setNewTaskTitleInput(e.target.value)}
+                onKeyUp={event => onKeyUpNewTaskInputHandler(event)}
+            />
+            <Button
+                isDisabled={addButtonIsDisabled}
+                title={"+"}
+                onClickHandler={() => onCLickNewTaskInputHandler()}
+            />
+            <ul>{filteredTasks.map((task: TaskType) => {
+                return (
+                    <li key={task.id}>
+                        <input type={"checkbox"} checked={task.isDone} onClick={() => taskChangeStatus(task.id)}/>
+                        {task.title}
+                        <Button title={"x"} onClickHandler={() => taskRemover(task.id)}/>
+                    </li>)
+            })}
             </ul>
-            <Button title={"All"} onCLickHandler={() => {
-                taskFilter('all')
+            <Button title={"All"} onClickHandler={() => {
+                setFilter("all")
             }}/>
-            <Button title={"Active"} onCLickHandler={() => {
-                taskFilter('active')
+            <Button title={"Active"} onClickHandler={() => {
+                setFilter("active")
             }}/>
-            <Button title={"Completed"} onCLickHandler={() => {
-                taskFilter('completed')
+            <Button title={"Completed"} onClickHandler={() => {
+                setFilter("completed")
             }}/>
-            {date && <div>{date}</div>}
         </div>
     )
 }
