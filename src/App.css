@@ -6,3 +6,27 @@
 .App > div {
   margin-right: 50px;
 }
+
+.task {
+  font-weight: bold;
+}
+
+.taskCompleted {
+  text-decoration: line-through;
+  opacity: 50%;
+}
+
+.filterBtnActive {
+  background-color: chocolate;
+  border-radius: 3px;
+  border: chocolate solid 2px;
+  color: white;
+}
+
+.error {
+  border: red 1px solid;
+}
+
+.error-message {
+  color: red;
+}

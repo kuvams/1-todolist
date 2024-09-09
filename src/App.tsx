@@ -1,7 +1,7 @@
 import "./App.css"
-import React, {useState} from "react";
 import {v1} from "uuid";
-import {TodoList} from "./components/TodoList";
+import React, {useState} from "react";
+import {Todolist} from "./components/Todolist";
 
 export type TaskType = {
     id: string
@@ -11,37 +11,38 @@ export type TaskType = {
 
 export const App = () => {
     const [tasks, setTasks] = useState<Array<TaskType>>([
-        { id: v1(), title: "HTML&CSS", isDone: true },
-        { id: v1(), title: "JS", isDone: true },
-        { id: v1(), title: "React", isDone: false },
+        {id: v1(), title: "HTML&CSS", isDone: true},
+        {id: v1(), title: "JS", isDone: true},
+        {id: v1(), title: "React", isDone: false},
     ])
-    const taskAdder = (title: string) => {
-        const newTask : TaskType = { id: v1(), title: title, isDone: false };
-        setTasks([newTask, ...tasks])
-    }
     const taskRemover = (id: string) => {
-        const newTasks = tasks.filter((task: TaskType) => task.id !== id)
+        let newTasks = tasks.filter((task) => task.id !== id)
         setTasks(newTasks)
     }
-    const taskChangeStatus = (id: string) => {
-        const newTasks = tasks.map((task) => {
+    const taskAdder = (title: string) => {
+        let newTask: TaskType = {id: v1(), title: title, isDone: false}
+        setTasks([newTask, ...tasks])
+    }
+    const taskStatusChanger = (id: string, status: boolean) => {
+        let newTasks = tasks.map(task => {
             if (task.id === id) {
-                task.isDone = !task.isDone
+                task.isDone = status
             }
             return task
         })
         setTasks(newTasks)
     }
 
-    return (
-        <div className="App">
-            <TodoList
-                tasks={tasks}
-                title={"What to learn"}
-                taskAdder={taskAdder}
-                taskRemover={taskRemover}
-                taskChangeStatus={taskChangeStatus}
-            />
-        </div>
-    );
+
+
+return (
+    <div className={'App'}>
+        <Todolist
+            taskRemover={taskRemover}
+            taskAdder={taskAdder}
+            taskStatusChanger={taskStatusChanger}
+            taskList={tasks}
+        />
+    </div>
+)
 }
