@@ -1,20 +1,23 @@
 import {TaskType} from "../App";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, KeyboardEvent, useState} from "react";
 
 export type TodolistPropsType = {
-    taskRemover: (id: string) => void
-    taskAdder: (title: string) => void
-    taskStatusChanger: (id: string, status: boolean) => void
+    todoListTitle: string
+    todoListRemover: (todolistID: string) => void
+    todoListId: string
+
     taskList: Array<TaskType>
+    taskRemover: (todolistID: string, taskId: string) => void
+    taskAdder: (todolistID: string, title: string) => void
+    taskStatusChanger: (todolistID: string, taskId: string, status: boolean) => void
 }
 export type filterType = 'all' | 'active' | 'completed'
 
 
 export const Todolist = (props: TodolistPropsType) => {
-    const {taskList} = props
-
-    const [newTaskInput, setNewTaskInput] = useState<string>('')
+    const {taskList, todoListTitle, todoListId} = props
     const [error, setError] = useState<null | string>(null)
+
     const [filter, setFilter] = useState<filterType>('all')
     let filteredTaskList = taskList
     if (filter === 'active') {
@@ -26,7 +29,7 @@ export const Todolist = (props: TodolistPropsType) => {
         setFilter(filter)
     }
 
-
+    const [newTaskInput, setNewTaskInput] = useState<string>('')
     const taskInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setError(null)
         setNewTaskInput(e.currentTarget.value)
@@ -34,40 +37,51 @@ export const Todolist = (props: TodolistPropsType) => {
             setError('The character limit has been exceeded.')
         }
     }
-
+    const newTaskInputEnterHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            taskAddHandler()
+        }
+    }
     const taskAddHandler = () => {
         if (error !== null) return
         if (newTaskInput.trim().length < 1) {
             setError('The name cannot be empty.')
         } else {
-            props.taskAdder(newTaskInput.trim())
+            props.taskAdder(todoListId, newTaskInput.trim())
         }
         setNewTaskInput('')
     }
-    const taskRemoveHandler = (id: string) => {
-        props.taskRemover(id)
+    const taskRemoveHandler = (taskId: string) => {
+        props.taskRemover(todoListId, taskId)
     }
-    const taskStatusChangeHandler = (id: string, status: boolean) => {
-        props.taskStatusChanger(id, !status)
+    const taskStatusChangeHandler = (taskId: string, status: boolean) => {
+        props.taskStatusChanger(todoListId, taskId, !status)
+    }
+
+    const todoListRemoveHandler = () => {
+        props.todoListRemover(todoListId)
     }
 
     return (
-        <div>
-            <h3>What to learn:</h3>
+        <div className='todoList'>
+            <h3>{todoListTitle}
+                <button onClick={todoListRemoveHandler}>x</button>
+            </h3>
             <div>
                 <input
-                    className={error === null ? '' : 'error'}
+                    className={error === null ? 'newTaskTitleInput' : 'errorNewTaskTitleInput'}
                     value={newTaskInput}
                     onChange={taskInputHandler}
-                    onKeyUp={(e) => e.key === 'Enter' ? taskAddHandler() : undefined}
+                    onKeyUp={newTaskInputEnterHandler}
                 />
                 <button disabled={error !== null || newTaskInput.length === 0} onClick={taskAddHandler}>+</button>
-                {error && <div style={{color: "red"}}>{error}</div>}
+                {error && <div className='error-message'>{error}</div>}
             </div>
             <ul>
+                {filteredTaskList.length === 0 && <span>Тасок нет</span>}
                 {filteredTaskList.map(task => {
                     return (
-                        <li key={task.id} className={task.isDone ? 'taskCompleted' : ''}>
+                        <li key={task.id} className={task.isDone ? 'taskCompleted' : 'task'}>
                             <input
                                 type={"checkbox"}
                                 checked={task.isDone}

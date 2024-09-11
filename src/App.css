@@ -3,12 +3,21 @@
   display: flex;
 }
 
-.App > div {
+.todoList {
   margin-right: 50px;
+  border: black solid 2px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba(62,197,89,0.47);
+  min-width: 300px;
 }
 
 .task {
   font-weight: bold;
+}
+
+.newTaskTitleInput {
+
 }
 
 .taskCompleted {
@@ -23,7 +32,7 @@
   color: white;
 }
 
-.error {
+.errorNewTaskTitleInput {
   border: red 1px solid;
 }
 
